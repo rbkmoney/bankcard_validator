@@ -20,7 +20,6 @@ prop_invalid_card_number() ->
 %%% Helpers %%%
 %%%%%%%%%%%%%%%
 check_invalid_card_data(PaymentSystem, Card) ->
-    erlang:display(Card),
     ok =/= bankcard_validator:validate(Card, undefined, PaymentSystem, #{}).
 
 %%%%%%%%%%%%%%%%%%
@@ -49,9 +48,9 @@ gen_invalid_card_number(PaymentSystem, L) ->
 
 invalid_card_data(PaymentSystem, L) ->
     ?LET(
-        CardData,
-        #{card_number => proper_types:to_binary(vector(L, choose($0, $9))), exp_date => invalid_exp_date()},
-        {PaymentSystem, CardData}
+        {CardNumber, ExpDate},
+        {vector(L, choose($0, $9)), invalid_exp_date()},
+        {PaymentSystem, #{card_number => list_to_binary(CardNumber), exp_date => ExpDate}}
     ).
 
 %% Generate strictly valid bank card expiration date
