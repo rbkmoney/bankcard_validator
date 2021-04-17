@@ -12,7 +12,7 @@
 prop_invalid_card_number() ->
     ?FORALL(
         {PaymentSystem, Card},
-        invalid_card_data(),
+        {known_payment_system(), invalid_card_data()},
         check_invalid_card_data(PaymentSystem, Card)
     ).
 
@@ -25,32 +25,24 @@ check_invalid_card_data(PaymentSystem, Card) ->
 %%%%%%%%%%%%%%%%%%
 %%% Generators %%%
 %%%%%%%%%%%%%%%%%%
-invalid_card_data() ->
-    ?LET(
-        PaymentSystem,
-        known_payment_system(),
-        invalid_card_number(PaymentSystem)
-    ).
-
 known_payment_system() ->
     oneof(bankcard_validator_legacy:get_known_rule_names()).
 
-%% Generate random card number that mimic to PAN
-invalid_card_number(PaymentSystem) ->
-    ?LET(L, choose(?MIN_CARD_NUMBER_LENGTH, ?MAX_CARD_NUMBER_LENGTH), gen_invalid_card_number(PaymentSystem, L)).
-
-gen_invalid_card_number(PaymentSystem, L) ->
-    ?SUCHTHAT(
-        {_, #{card_number := CardNumber}},
-        invalid_card_data(PaymentSystem, L),
-        not is_luhn(CardNumber, 0)
-    ).
-
-invalid_card_data(PaymentSystem, L) ->
-    ?LET(
-        {CardNumber, ExpDate},
-        {vector(L, choose($0, $9)), invalid_exp_date()},
-        {PaymentSystem, #{card_number => list_to_binary(CardNumber), exp_date => ExpDate}}
+invalid_card_data() ->
+    ?LET(InvalidExpDate,
+        invalid_exp_date(),
+        ?LET(CardNumberLength,
+            choose(?MIN_CARD_NUMBER_LENGTH, ?MAX_CARD_NUMBER_LENGTH),
+            ?SUCHTHAT(
+                #{card_number := CardNumber},
+                ?LET(
+                    CardNumber,
+                    vector(CardNumberLength, choose($0, $9)),
+                    #{card_number => list_to_binary(CardNumber), exp_date => InvalidExpDate}
+                ),
+                not is_luhn(CardNumber, 0)
+            )
+        )
     ).
 
 %% Generate strictly valid bank card expiration date
@@ -58,12 +50,6 @@ invalid_exp_date() ->
     {{Y, M, _}, _} = calendar:system_time_to_local_time(erlang:system_time(), native),
     Year = (Y rem 100) - 1,
     {M, Year}.
-
-%% Generate strictly valid bank card expiration date
-%%valid_exp_date() ->
-%%    {{Y, M, _},_} = calendar:system_time_to_local_time(erlang:system_time(), native),
-%%    Year = (Y rem 100) + 3,
-%%    {M, Year}.
 
 is_luhn(<<CheckSum>>, Sum) ->
     case Sum * 9 rem 10 of
