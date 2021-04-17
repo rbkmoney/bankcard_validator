@@ -1,4 +1,4 @@
--module(prop_bankcard_validation).
+-module(prop_bankcard_validation_invalid_carddata).
 -include_lib("proper/include/proper.hrl").
 -include_lib("damsel/include/dmsl_base_thrift.hrl").
 
@@ -26,17 +26,23 @@ check_invalid_card_data(PaymentSystem, Card) ->
 %%%%%%%%%%%%%%%%%%
 %%% Generators %%%
 %%%%%%%%%%%%%%%%%%
+%% Retrieves name of one of known rules
 known_payment_system() ->
     oneof(bankcard_validator_legacy:get_known_rule_names()).
 
+%% Generates invalid card data
 invalid_card_data() ->
-    ?LET(Cardholder,
+    ?LET(
+        Cardholder,
         cardholder(),
-        ?LET(CVC,
+        ?LET(
+            CVC,
             vector(?MIN_INVALID_CVC_LENGTH, choose($0, $9)),
-            ?LET(InvalidExpDate,
+            ?LET(
+                InvalidExpDate,
                 invalid_exp_date(),
-                ?LET(CardNumberLength,
+                ?LET(
+                    CardNumberLength,
                     choose(?MIN_CARD_NUMBER_LENGTH, ?MAX_CARD_NUMBER_LENGTH),
                     ?SUCHTHAT(
                         #{card_number := CardNumber},
@@ -57,8 +63,9 @@ invalid_card_data() ->
         )
     ).
 
+%% Generate random caldholder name
 cardholder() ->
-    list(oneof([choose($A,$Z), 32])).
+    list(oneof([choose($A, $Z), 32, $.])).
 
 %% Generate strictly valid bank card expiration date
 invalid_exp_date() ->
@@ -66,6 +73,9 @@ invalid_exp_date() ->
     Year = (Y rem 100) - 1,
     {M, Year}.
 
+%%%%%%%%%%%%%%%%%%
+%%%  Utilites  %%%
+%%%%%%%%%%%%%%%%%%
 is_luhn(<<CheckSum>>, Sum) ->
     case Sum * 9 rem 10 of
         M when M =:= CheckSum - $0 ->
