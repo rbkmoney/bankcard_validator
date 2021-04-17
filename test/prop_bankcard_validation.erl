@@ -4,6 +4,7 @@
 
 -define(MIN_CARD_NUMBER_LENGTH, 12).
 -define(MAX_CARD_NUMBER_LENGTH, 20).
+-define(MIN_INVALID_CVC_LENGTH, 5).
 
 %%%%%%%%%%%%%%%%%%
 %%% Properties %%%
@@ -29,21 +30,35 @@ known_payment_system() ->
     oneof(bankcard_validator_legacy:get_known_rule_names()).
 
 invalid_card_data() ->
-    ?LET(InvalidExpDate,
-        invalid_exp_date(),
-        ?LET(CardNumberLength,
-            choose(?MIN_CARD_NUMBER_LENGTH, ?MAX_CARD_NUMBER_LENGTH),
-            ?SUCHTHAT(
-                #{card_number := CardNumber},
-                ?LET(
-                    CardNumber,
-                    vector(CardNumberLength, choose($0, $9)),
-                    #{card_number => list_to_binary(CardNumber), exp_date => InvalidExpDate}
-                ),
-                not is_luhn(CardNumber, 0)
+    ?LET(Cardholder,
+        cardholder(),
+        ?LET(CVC,
+            vector(?MIN_INVALID_CVC_LENGTH, choose($0, $9)),
+            ?LET(InvalidExpDate,
+                invalid_exp_date(),
+                ?LET(CardNumberLength,
+                    choose(?MIN_CARD_NUMBER_LENGTH, ?MAX_CARD_NUMBER_LENGTH),
+                    ?SUCHTHAT(
+                        #{card_number := CardNumber},
+                        ?LET(
+                            CardNumber,
+                            vector(CardNumberLength, choose($0, $9)),
+                            #{
+                                card_number => list_to_binary(CardNumber),
+                                exp_date => InvalidExpDate,
+                                cvc => list_to_binary(CVC),
+                                cardholder => list_to_binary(Cardholder)
+                            }
+                        ),
+                        not is_luhn(CardNumber, 0)
+                    )
+                )
             )
         )
     ).
+
+cardholder() ->
+    list(oneof([choose($A,$Z), 32])).
 
 %% Generate strictly valid bank card expiration date
 invalid_exp_date() ->
