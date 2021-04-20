@@ -69,8 +69,8 @@ cardholder() ->
 
 %% Generate strictly valid bank card expiration date
 invalid_exp_date() ->
-    {{Y, M, _}, _} = calendar:system_time_to_local_time(erlang:system_time(), native),
-    Year = (Y rem 100) - 1,
+    {{Y, M, _}, _} = calendar:universal_time(),
+    Year = Y - 1,
     {M, Year}.
 
 %%%%%%%%%%%%%%%%%%

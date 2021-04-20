@@ -88,7 +88,7 @@ check_value(V, {length, Length}, _) ->
     lists:any(fun(L) -> check_range(V, L) end, [Length]);
 check_value(V, {checksum, {luhn, #domain_PaymentCardNumberChecksumLuhn{}}}, _) ->
     check_luhn(V, 0);
-check_value({M, Y}, {exp_date, {exact_exp_date, #domain_PaymentCardExactExpirationDate{}}}, #{
+check_value({M, Y}, {exact_exp_date, #domain_PaymentCardExactExpirationDate{}}, #{
     now := {{Y0, M0, _DD}, _Time}
 }) ->
     M >= 1 andalso
