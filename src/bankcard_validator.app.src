@@ -1,14 +1,13 @@
 {application, bankcard_validator,
- [{description, "An OTP library"},
-  {vsn, "0.1.0"},
+ [{description, "Bankcard validator"},
+  {vsn, git},
   {registered, []},
   {applications,
    [kernel,
-    stdlib
+    stdlib,
+    damsel
    ]},
   {env,[]},
   {modules, []},
-
-  {licenses, ["Apache 2.0"]},
-  {links, []}
+  {licenses, ["Apache 2.0"]}
  ]}.
