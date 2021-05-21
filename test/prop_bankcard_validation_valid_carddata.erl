@@ -122,4 +122,4 @@ get_possible_lengths([#'IntegerRange'{lower = L, upper = undefined} | Rest], Acc
 get_possible_lengths([#'IntegerRange'{lower = undefined, upper = U} | Rest], Acc) ->
     get_possible_lengths(Rest, ordsets:add_element(U-1, Acc));
 get_possible_lengths([#'IntegerRange'{lower = L, upper = U} | Rest], Acc) ->
-    get_possible_lengths(Rest, ordsets:add_element(choose(L-1,U-1), Acc)).
+    get_possible_lengths(Rest, ordsets:add_element(choose(L-1, U-1), Acc)).

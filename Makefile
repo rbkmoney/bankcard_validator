@@ -49,7 +49,7 @@ xref: submodules
 	$(REBAR) xref
 
 lint:
-	elvis rock -V
+	$(REBAR) lint
 
 check_format:
 	$(REBAR) fmt -c
@@ -64,9 +64,8 @@ clean:
 	$(REBAR) clean
 
 distclean:
-	$(REBAR) clean -a
 	rm -rf _build
 
 # CALL_W_CONTAINER
 test: submodules
-	$(REBAR) do proper
+	$(REBAR) as test do proper
