@@ -21,7 +21,7 @@ prop_invalid_card_number() ->
 %%% Helpers %%%
 %%%%%%%%%%%%%%%
 check_invalid_card_data(PaymentSystem, Card) ->
-    ok =/= bankcard_validator:validate(Card, undefined, PaymentSystem, #{}).
+    ok =/= bankcard_validator:validate(Card, PaymentSystem, #{}).
 
 %%%%%%%%%%%%%%%%%%
 %%% Generators %%%

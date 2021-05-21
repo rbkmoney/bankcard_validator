@@ -3,7 +3,7 @@
 -include_lib("damsel/include/dmsl_base_thrift.hrl").
 -include_lib("damsel/include/dmsl_domain_thrift.hrl").
 
--export([validate/4]).
+-export([validate/3]).
 
 -type card_data() :: bankcard_validator_carddata:card_data().
 
@@ -38,30 +38,11 @@
 -export_type([validation_env/0]).
 -export_type([reason/0]).
 
--spec validate(card_data(), session_data() | undefined, payment_system(), validation_env()) -> ok | {error, reason()}.
-validate(CardData, SessionData, PaymentSystem, Env) ->
+-spec validate(card_data(), payment_system(), validation_env()) -> ok | {error, reason()}.
+validate(CardData, PaymentSystem, Env) ->
     Ruleset = bankcard_validator_legacy:get_payment_system_ruleset(PaymentSystem),
-    validate_card_data(merge_data(CardData, SessionData), Ruleset, Env).
-
-merge_data(CardData, undefined) ->
-    CardData;
-merge_data(CardData, #{auth_data := AuthData}) ->
-    CVV = get_cvv_from_session_data(AuthData),
-    CardData#{cvv => maybe_undefined(CVV)}.
-
-get_cvv_from_session_data(#{card_security_code := AuthData}) ->
-    maps:get(value, AuthData);
-get_cvv_from_session_data(_) ->
-    undefined.
-
-maybe_undefined(<<>>) ->
-    undefined;
-maybe_undefined(CVV) ->
-    CVV.
-
-validate_card_data(CardData, Assertions, Env) ->
     try
-        run_assertions(CardData, Assertions, Env)
+        run_assertions(CardData, Ruleset, Env)
     catch
         Reason ->
             {error, Reason}
