@@ -23,7 +23,7 @@
     auth_data := session_auth_data()
 }.
 
--type reason() :: unrecognized | {invalid, cardnumber | cvv | exp_date}.
+-type reason() :: unrecognized | {invalid, card_number | cvc | exp_date}.
 -type validation_env() :: #{
     now := calendar:datetime()
 }.
