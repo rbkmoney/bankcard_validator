@@ -156,7 +156,7 @@
 -export([get_known_rule_names/0]).
 -spec get_known_rule_names() -> [binary()].
 get_known_rule_names() ->
-    maps:keys(?KNOWN_RULES).
+    maps:keys(maps:filter(fun(_K, V) ->  V =/= [] end, ?KNOWN_RULES)).
 -endif.
 
 % config

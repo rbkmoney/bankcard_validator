@@ -97,8 +97,7 @@ add_luhn_checksum(<<N, Rest/binary>>, Sum) ->
 
 get_cvc(PaymentSystem) ->
     Rules = bankcard_validator_legacy:get_payment_system_ruleset(PaymentSystem),
-    case proplists:get_value(cvc, Rules, undefined) of
-        undefined -> oneof([3]);
+    case proplists:get_value(cvc, Rules) of
         {length, #'IntegerRange'{lower = L, upper = undefined}} -> vector(L, choose($0, $9));
         {length, #'IntegerRange'{lower = undefined, upper = U}} -> vector(U, choose($0, $9));
         {length, #'IntegerRange'{lower = L, upper = U}} ->
