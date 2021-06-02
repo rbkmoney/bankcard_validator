@@ -16,5 +16,34 @@
 
 -module(bankcard_validator_domain).
 
-%% API
--export([]).
+-include_lib("damsel/include/dmsl_domain_thrift.hrl").
+-include_lib("damsel/include/dmsl_domain_config_thrift.hrl").
+
+-export([get_payment_system_ruleset/2]).
+
+-type context() :: woody_context:ctx().
+-type payment_system_id() :: binary().
+-type validation_rule() :: dmsl_domain_thrift:'PaymentCardValidationRule'().
+-type validation_rules() :: ordsets:ordset(validation_rule()) | undefined.
+
+-export_type([validation_rules/0]).
+-export_type([payment_system_id/0]).
+
+-spec get_payment_system_ruleset(payment_system_id(), context()) -> {ok, validation_rules()} | {error, not_found}.
+get_payment_system_ruleset(ID, Context) ->
+    #'Snapshot'{domain = Domain} = get_shapshot(Context),
+    case dmt_domain:get_object({payment_system, #domain_PaymentSystemRef{id = ID}}, Domain) of
+        {ok, {payment_system, #domain_PaymentSystemObject{data = #domain_PaymentSystem{validation_rules = Ruleset}}}} ->
+            {ok, Ruleset};
+        error ->
+            {error, not_found}
+    end.
+
+get_shapshot(Context) ->
+    get_shapshot(head(), Context).
+
+get_shapshot(Reference, _Context) ->
+    dmt_client:checkout(Reference).
+
+head() ->
+    {'head', #'Head'{}}.

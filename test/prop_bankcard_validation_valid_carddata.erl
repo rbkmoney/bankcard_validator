@@ -5,7 +5,7 @@
 %%%%%%%%%%%%%%%%%%
 %%% Properties %%%
 %%%%%%%%%%%%%%%%%%
--spec prop_valid_card_number() -> boolean().
+-spec prop_valid_card_number() -> proper:test().
 prop_valid_card_number() ->
     ?FORALL(
         {PaymentSystem, CardData},
@@ -18,7 +18,7 @@ prop_valid_card_number() ->
 %%%%%%%%%%%%%%%
 check_valid_card_data(PaymentSystem, Card) ->
     DefaultEnv = #{now => calendar:universal_time()},
-    ok == bankcard_validator:validate(Card, PaymentSystem, DefaultEnv, #{}).
+    ok == bankcard_validator:validate(Card, PaymentSystem, DefaultEnv, #{deadline => undefined, rpc_id => #{}}).
 
 %%%%%%%%%%%%%%%%%%
 %%% Generators %%%
@@ -81,7 +81,7 @@ valid_exp_date() ->
 %%%  Utilites  %%%
 %%%%%%%%%%%%%%%%%%
 add_luhn_checksum(CardNumber) ->
-    << CardNumber/binary, (add_luhn_checksum(CardNumber, 0)) >>.
+    <<CardNumber/binary, (add_luhn_checksum(CardNumber, 0))>>.
 
 add_luhn_checksum(<<>>, Sum) ->
     $0 + (Sum * 9 rem 10);
@@ -98,8 +98,10 @@ add_luhn_checksum(<<N, Rest/binary>>, Sum) ->
 get_cvc(PaymentSystem) ->
     Rules = bankcard_validator_legacy:get_payment_system_ruleset(PaymentSystem),
     case proplists:get_value(cvc, Rules) of
-        {length, #'IntegerRange'{lower = L, upper = undefined}} -> vector(L, choose($0, $9));
-        {length, #'IntegerRange'{lower = undefined, upper = U}} -> vector(U, choose($0, $9));
+        {length, #'IntegerRange'{lower = L, upper = undefined}} ->
+            vector(L, choose($0, $9));
+        {length, #'IntegerRange'{lower = undefined, upper = U}} ->
+            vector(U, choose($0, $9));
         {length, #'IntegerRange'{lower = L, upper = U}} ->
             ?LET(
                 CvcLength,
@@ -117,8 +119,8 @@ get_card_number_length(PaymentSystem) ->
 get_possible_lengths([], Acc) ->
     ordsets:to_list(Acc);
 get_possible_lengths([#'IntegerRange'{lower = L, upper = undefined} | Rest], Acc) ->
-    get_possible_lengths(Rest, ordsets:add_element(L-1, Acc));
+    get_possible_lengths(Rest, ordsets:add_element(L - 1, Acc));
 get_possible_lengths([#'IntegerRange'{lower = undefined, upper = U} | Rest], Acc) ->
-    get_possible_lengths(Rest, ordsets:add_element(U-1, Acc));
+    get_possible_lengths(Rest, ordsets:add_element(U - 1, Acc));
 get_possible_lengths([#'IntegerRange'{lower = L, upper = U} | Rest], Acc) ->
-    get_possible_lengths(Rest, ordsets:add_element(choose(L-1, U-1), Acc)).
+    get_possible_lengths(Rest, ordsets:add_element(choose(L - 1, U - 1), Acc)).

@@ -20,9 +20,8 @@
 
 -export([get_payment_system_ruleset/1]).
 
--type payment_system() :: dmsl_domain_thrift:'BankCardPaymentSystem'().
--type card_validation_rule() :: dmsl_domain_thrift:'PaymentCardValidationRule'().
--type validation_rules() :: ordsets:ordset(card_validation_rule()).
+-type payment_system() :: bankcard_validator:payment_system().
+-type validation_rules() :: bankcard_validator_domain:validation_rules().
 
 -export_type([payment_system/0]).
 
@@ -146,17 +145,17 @@
         {exp_date, {exact_exp_date, #'domain_PaymentCardExactExpirationDate'{}}}
     ],
 
+    %% Special case for payment systems without any validation rules
+    %% for backward compatibility
     <<"DUMMY">> => [],
-
     <<"UZCARD">> => []
-
 }).
 
 -ifdef(TEST).
 -export([get_known_rule_names/0]).
 -spec get_known_rule_names() -> [binary()].
 get_known_rule_names() ->
-    maps:keys(maps:filter(fun(_K, V) ->  V =/= [] end, ?KNOWN_RULES)).
+    maps:keys(maps:filter(fun(_K, V) -> V =/= [] end, ?KNOWN_RULES)).
 -endif.
 
 % config

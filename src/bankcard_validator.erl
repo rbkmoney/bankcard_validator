@@ -29,6 +29,7 @@
     now := calendar:datetime()
 }.
 
+-export_type([payment_system/0]).
 -export_type([validation_env/0]).
 -export_type([reason/0]).
 
@@ -42,6 +43,10 @@ validate(CardData, PaymentSystem, Env, Context) ->
             {error, Reason}
     end.
 
+run_assertions(_CardData, undefined, _Env) ->
+    %% This means there is no known validation assertions
+    %% for some kind of payment system, for example, DUMMY
+    true;
 run_assertions(CardData, Assertions, Env) ->
     lists:foreach(
         fun
@@ -90,7 +95,13 @@ check_luhn(<<N, Rest/binary>>, Sum) when byte_size(Rest) rem 2 =:= 1 ->
 check_luhn(<<N, Rest/binary>>, Sum) ->
     check_luhn(Rest, Sum + N - $0).
 
-get_ruleset(PaymentSystem, _Context) ->
-    case undefined of
-        undefined ->  bankcard_validator_legacy:get_payment_system_ruleset(PaymentSystem)
+get_ruleset(PaymentSystem, Context) ->
+    case bankcard_validator_domain:get_payment_system_ruleset(PaymentSystem, Context) of
+        {error, not_found} ->
+            %% If no payment system with given id found in domain config
+            %% try to use legacy ruleset (if any)
+            %% TODO Remove after migration to dominant
+            bankcard_validator_legacy:get_payment_system_ruleset(PaymentSystem);
+        {ok, Ruleset} ->
+            Ruleset
     end.

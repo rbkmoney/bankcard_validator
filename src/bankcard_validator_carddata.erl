@@ -72,8 +72,7 @@ decode_issuer_country(Residence) when is_binary(Residence) ->
 decode_issuer_country(undefined) ->
     undefined.
 
--spec build_bankcard_data(card_data(), extra_card_data(), session_data() | undefined) ->
-    bankcard_data().
+-spec build_bankcard_data(card_data(), extra_card_data(), session_data() | undefined) -> bankcard_data().
 build_bankcard_data(CardData, ExtraCardData, undefined) ->
     maps:merge(convert_card_data(CardData), ExtraCardData);
 build_bankcard_data(CardData, ExtraCardData, #cds_SessionData{auth_data = AuthData}) ->

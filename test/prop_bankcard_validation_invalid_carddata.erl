@@ -9,7 +9,7 @@
 %%%%%%%%%%%%%%%%%%
 %%% Properties %%%
 %%%%%%%%%%%%%%%%%%
--spec prop_invalid_card_number() -> boolean().
+-spec prop_invalid_card_number() -> proper:test().
 prop_invalid_card_number() ->
     ?FORALL(
         {PaymentSystem, Card},
@@ -21,7 +21,8 @@ prop_invalid_card_number() ->
 %%% Helpers %%%
 %%%%%%%%%%%%%%%
 check_invalid_card_data(PaymentSystem, Card) ->
-    ok =/= bankcard_validator:validate(Card, PaymentSystem, #{}, #{}).
+    DefaultEnv = #{now => calendar:universal_time()},
+    ok =/= bankcard_validator:validate(Card, PaymentSystem, DefaultEnv, #{deadline => undefined, rpc_id => #{}}).
 
 %%%%%%%%%%%%%%%%%%
 %%% Generators %%%
