@@ -18,7 +18,7 @@ prop_valid_card_number() ->
 %%%%%%%%%%%%%%%
 check_valid_card_data(PaymentSystem, Card) ->
     DefaultEnv = #{now => calendar:universal_time()},
-    ok == bankcard_validator:validate(Card, PaymentSystem, DefaultEnv).
+    ok == bankcard_validator:validate(Card, PaymentSystem, DefaultEnv, #{}).
 
 %%%%%%%%%%%%%%%%%%
 %%% Generators %%%
