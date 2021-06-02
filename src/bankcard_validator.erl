@@ -3,44 +3,22 @@
 -include_lib("damsel/include/dmsl_base_thrift.hrl").
 -include_lib("damsel/include/dmsl_domain_thrift.hrl").
 
--export([validate/3]).
+-export([validate/4]).
 
--type card_data() :: bankcard_validator_carddata:card_data().
-
--type session_auth_data() :: session_auth_security_code() | session_auth_3ds().
--type session_auth_security_code() :: #{
-    card_security_code := #{value := binary()}
-}.
-
--type session_auth_3ds() :: #{
-    auth_3ds := #{
-        cryptogram := binary(),
-        eci := binary() | undefined
-    }
-}.
-
--type session_data() :: #{
-    auth_data := session_auth_data()
-}.
-
+-type payment_system() :: binary().
+-type context() :: woody_context:ctx().
+-type bankcard_data() :: bankcard_validator_carddata:bankcard_data().
 -type reason() :: unrecognized | {invalid, card_number | cvc | exp_date}.
 -type validation_env() :: #{
     now := calendar:datetime()
 }.
 
--type payment_system() :: binary().
-
--export_type([card_data/0]).
--export_type([session_data/0]).
--export_type([session_auth_data/0]).
--export_type([session_auth_security_code/0]).
--export_type([session_auth_3ds/0]).
 -export_type([validation_env/0]).
 -export_type([reason/0]).
 
--spec validate(card_data(), payment_system(), validation_env()) -> ok | {error, reason()}.
-validate(CardData, PaymentSystem, Env) ->
-    Ruleset = bankcard_validator_legacy:get_payment_system_ruleset(PaymentSystem),
+-spec validate(bankcard_data(), payment_system(), validation_env(), context()) -> ok | {error, reason()}.
+validate(CardData, PaymentSystem, Env, Context) ->
+    Ruleset = get_ruleset(PaymentSystem, Context),
     try
         run_assertions(CardData, Ruleset, Env)
     catch
@@ -95,3 +73,8 @@ check_luhn(<<N, Rest/binary>>, Sum) when byte_size(Rest) rem 2 =:= 1 ->
     end;
 check_luhn(<<N, Rest/binary>>, Sum) ->
     check_luhn(Rest, Sum + N - $0).
+
+get_ruleset(PaymentSystem, _Context) ->
+    case undefined of
+        undefined ->  bankcard_validator_legacy:get_payment_system_ruleset(PaymentSystem)
+    end.

@@ -1,11 +1,13 @@
 {application, bankcard_validator,
- [{description, "Bankcard validator"},
+ [{description, "Bankcard validation library"},
   {vsn, git},
   {registered, []},
   {applications,
    [kernel,
     stdlib,
-    damsel
+    cds_proto,
+    damsel,
+    dmt_client
    ]},
   {env,[]},
   {modules, []},
