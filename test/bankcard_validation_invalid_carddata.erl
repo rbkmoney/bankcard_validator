@@ -16,7 +16,10 @@ invalid_card_number_test() ->
     ?FORALL(
         {PaymentSystem, Card},
         {known_payment_system(), invalid_card_data()},
-        check_invalid_card_data(PaymentSystem, Card)
+        ?WHENFAIL(
+            ct:pal("Proptest failed with payment system '~s', card data '~p'", [PaymentSystem,Card]),
+            check_invalid_card_data(PaymentSystem, Card)
+        )
     ).
 
 %%%%%%%%%%%%%%%

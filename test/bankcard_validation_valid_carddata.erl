@@ -12,14 +12,10 @@ valid_card_number_test() ->
     ?FORALL(
         {PaymentSystem, CardData},
         payment_system_and_card_data(),
-        check_valid_card_data(PaymentSystem, CardData)
-%%        begin
-%%            Result = check_valid_card_data(PaymentSystem, CardData),
-%%            ?WHENFAIL(
-%%                ct:pal("Result: ~p~n", [Result]),
-%%                aggregate(command_names({PaymentSystem, CardData}), Result =:= true)
-%%            )
-%%        end
+        ?WHENFAIL(
+            ct:pal("Proptest failed with payment system '~s', card data '~p'", [PaymentSystem,CardData]),
+            check_valid_card_data(PaymentSystem, CardData)
+        )
     ).
 
 %%%%%%%%%%%%%%%
