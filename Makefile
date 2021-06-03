@@ -58,7 +58,7 @@ format:
 	$(REBAR) fmt -w
 
 dialyze: submodules
-	$(REBAR) as test dialyzer
+	$(REBAR) dialyzer
 
 clean:
 	$(REBAR) clean
@@ -68,4 +68,4 @@ distclean:
 
 # CALL_W_CONTAINER
 test: submodules
-	$(REBAR) as test do ct
+	$(REBAR) ct
