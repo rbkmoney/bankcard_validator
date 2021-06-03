@@ -170,9 +170,9 @@ test_invalid_exp_date(_C) ->
 test_empty_ruleset(_C) ->
     DefaultEnv = #{now => calendar:universal_time()},
     ok = bankcard_validator:validate(
-            #{card_number => <<"42424242424242424242">>, exp_date => {2, 2020}},
-            <<"DUMMY">>,
-            DefaultEnv,
-            #{deadline => undefined, rpc_id => #{}}
-        ),
+        #{card_number => <<"42424242424242424242">>, exp_date => {2, 2020}},
+        <<"DUMMY">>,
+        DefaultEnv,
+        #{deadline => undefined, rpc_id => #{}}
+    ),
     ok.
