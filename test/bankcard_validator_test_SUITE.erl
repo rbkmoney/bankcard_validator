@@ -34,6 +34,7 @@
 -export([test_invalid_cvc/1]).
 -export([test_invalid_exp_date/1]).
 -export([test_empty_ruleset/1]).
+-export([test_empty_legacy_ruleset/1]).
 
 -type config() :: [{atom(), any()}].
 -type case_name() :: atom().
@@ -49,6 +50,7 @@
 -spec test_invalid_cvc(config()) -> ok.
 -spec test_invalid_exp_date(config()) -> ok.
 -spec test_empty_ruleset(config()) -> ok.
+-spec test_empty_legacy_ruleset(config()) -> ok.
 
 -behaviour(supervisor).
 
@@ -68,7 +70,8 @@ all() ->
         test_invalid_cvc,
         test_invalid_exp_date,
         test_invalid_card_number_range,
-        test_empty_ruleset
+        test_empty_ruleset,
+        test_empty_legacy_ruleset
     ].
 
 %%
@@ -172,6 +175,16 @@ test_empty_ruleset(_C) ->
     ok = bankcard_validator:validate(
         #{card_number => <<"42424242424242424242">>, exp_date => {2, 2020}},
         <<"DUMMY">>,
+        DefaultEnv,
+        #{deadline => undefined, rpc_id => #{}}
+    ),
+    ok.
+
+test_empty_legacy_ruleset(_C) ->
+    DefaultEnv = #{now => calendar:universal_time()},
+    ok = bankcard_validator:validate(
+        #{card_number => <<"42424242424242424242">>, exp_date => {2, 2020}},
+        <<"UZCARD">>,
         DefaultEnv,
         #{deadline => undefined, rpc_id => #{}}
     ),
