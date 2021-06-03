@@ -51,6 +51,13 @@ init_suite(Module, Config) ->
                                             <<"VISA">>
                                         )
                                     }
+                                }},
+                            {payment_system, #domain_PaymentSystemRef{id = <<"DUMMY">>}} =>
+                                {payment_system, #domain_PaymentSystemObject{
+                                    ref = #domain_PaymentSystemRef{id = <<"DUMMY">>},
+                                    data = #domain_PaymentSystem{
+                                        name = <<"DUMMY">>
+                                    }
                                 }}
                         }
                     }}

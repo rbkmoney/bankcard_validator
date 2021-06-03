@@ -51,7 +51,7 @@ validate(CardData, PaymentSystem, Env, Context) ->
 run_assertions(_CardData, undefined, _Env) ->
     %% This means there is no known validation assertions
     %% for some kind of payment system, for example, DUMMY
-    true;
+    ok;
 run_assertions(CardData, Assertions, Env) ->
     lists:foreach(
         fun
