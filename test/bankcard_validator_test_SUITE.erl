@@ -128,7 +128,8 @@ test_invalid_card_number_checksum(_C) ->
             <<"VISA">>,
             DefaultEnv,
             #{deadline => undefined, rpc_id => #{}}
-        ).
+        ),
+    ok.
 
 test_invalid_card_number_range(_C) ->
     DefaultEnv = #{now => calendar:universal_time()},
@@ -138,7 +139,8 @@ test_invalid_card_number_range(_C) ->
             <<"VISA">>,
             DefaultEnv,
             #{deadline => undefined, rpc_id => #{}}
-        ).
+        ),
+    ok.
 
 test_invalid_cvc(_C) ->
     DefaultEnv = #{now => calendar:universal_time()},
@@ -148,7 +150,8 @@ test_invalid_cvc(_C) ->
             <<"VISA">>,
             DefaultEnv,
             #{deadline => undefined, rpc_id => #{}}
-        ).
+        ),
+    ok.
 
 test_invalid_exp_date(_C) ->
     DefaultEnv = #{now => calendar:universal_time()},
@@ -158,4 +161,5 @@ test_invalid_exp_date(_C) ->
             <<"VISA">>,
             DefaultEnv,
             #{deadline => undefined, rpc_id => #{}}
-        ).
+        ),
+    ok.
