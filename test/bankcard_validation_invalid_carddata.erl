@@ -17,7 +17,7 @@ invalid_card_number_test() ->
         {PaymentSystem, Card},
         {known_payment_system(), invalid_card_data()},
         ?WHENFAIL(
-            ct:pal("Proptest failed with payment system '~s', card data '~p'", [PaymentSystem,Card]),
+            ct:pal("Proptest failed with payment system '~s', card data '~p'", [PaymentSystem, Card]),
             check_invalid_card_data(PaymentSystem, Card)
         )
     ).

@@ -13,7 +13,7 @@ valid_card_number_test() ->
         {PaymentSystem, CardData},
         payment_system_and_card_data(),
         ?WHENFAIL(
-            ct:pal("Proptest failed with payment system '~s', card data '~p'", [PaymentSystem,CardData]),
+            ct:pal("Proptest failed with payment system '~s', card data '~p'", [PaymentSystem, CardData]),
             check_valid_card_data(PaymentSystem, CardData)
         )
     ).
@@ -117,9 +117,12 @@ get_cvc(PaymentSystem) ->
 
 get_card_number_length(PaymentSystem) ->
     Rules = bankcard_validator_legacy:get_payment_system_ruleset(PaymentSystem),
-    [Ranges|_] =
+    [Ranges | _] =
         lists:filtermap(
-            fun({card_number, {ranges, Ranges}}) -> {true, Ranges}; (_) -> false end,
+            fun
+                ({card_number, {ranges, Ranges}}) -> {true, Ranges};
+                (_) -> false
+            end,
             Rules
         ),
     oneof(get_possible_lengths(Ranges, ordsets:new())).

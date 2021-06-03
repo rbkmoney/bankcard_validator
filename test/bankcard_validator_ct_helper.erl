@@ -39,20 +39,22 @@ init_suite(Module, Config) ->
             {
                 'Repository',
                 {dmsl_domain_config_thrift, 'Repository'},
-                fun('Checkout', _) -> {ok, #'Snapshot'{
-                    version = 1,
-                    domain = #{
-                        {payment_system, #domain_PaymentSystemRef{id = <<"VISA">>}} =>
-                        {payment_system, #domain_PaymentSystemObject{
-                            ref = #domain_PaymentSystemRef{id = <<"VISA">>},
-                            data = #domain_PaymentSystem{
-                                name = <<"VISA">>,
-                                validation_rules = bankcard_validator_legacy:get_payment_system_ruleset(<<"VISA">>)
-                            }
-                        }}
-                    }
-                }
-                }
+                fun('Checkout', _) ->
+                    {ok, #'Snapshot'{
+                        version = 1,
+                        domain = #{
+                            {payment_system, #domain_PaymentSystemRef{id = <<"VISA">>}} =>
+                                {payment_system, #domain_PaymentSystemObject{
+                                    ref = #domain_PaymentSystemRef{id = <<"VISA">>},
+                                    data = #domain_PaymentSystem{
+                                        name = <<"VISA">>,
+                                        validation_rules = bankcard_validator_legacy:get_payment_system_ruleset(
+                                            <<"VISA">>
+                                        )
+                                    }
+                                }}
+                        }
+                    }}
                 end
             }
         ],
