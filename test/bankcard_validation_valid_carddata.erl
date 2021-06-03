@@ -1,16 +1,25 @@
--module(prop_bankcard_validation_valid_carddata).
+-module(bankcard_validation_valid_carddata).
 -include_lib("proper/include/proper.hrl").
 -include_lib("damsel/include/dmsl_base_thrift.hrl").
+
+-export([valid_card_number_test/0]).
 
 %%%%%%%%%%%%%%%%%%
 %%% Properties %%%
 %%%%%%%%%%%%%%%%%%
--spec prop_valid_card_number() -> proper:test().
-prop_valid_card_number() ->
+-spec valid_card_number_test() -> proper:test().
+valid_card_number_test() ->
     ?FORALL(
         {PaymentSystem, CardData},
         payment_system_and_card_data(),
         check_valid_card_data(PaymentSystem, CardData)
+%%        begin
+%%            Result = check_valid_card_data(PaymentSystem, CardData),
+%%            ?WHENFAIL(
+%%                ct:pal("Result: ~p~n", [Result]),
+%%                aggregate(command_names({PaymentSystem, CardData}), Result =:= true)
+%%            )
+%%        end
     ).
 
 %%%%%%%%%%%%%%%
@@ -18,7 +27,7 @@ prop_valid_card_number() ->
 %%%%%%%%%%%%%%%
 check_valid_card_data(PaymentSystem, Card) ->
     DefaultEnv = #{now => calendar:universal_time()},
-    ok == bankcard_validator:validate(Card, PaymentSystem, DefaultEnv, #{deadline => undefined, rpc_id => #{}}).
+    ok =:= bankcard_validator:validate(Card, PaymentSystem, DefaultEnv, #{deadline => undefined, rpc_id => #{}}).
 
 %%%%%%%%%%%%%%%%%%
 %%% Generators %%%
@@ -112,8 +121,11 @@ get_cvc(PaymentSystem) ->
 
 get_card_number_length(PaymentSystem) ->
     Rules = bankcard_validator_legacy:get_payment_system_ruleset(PaymentSystem),
-    CardnumberRules = proplists:get_value(card_number, Rules),
-    Ranges = proplists:get_value(ranges, CardnumberRules),
+    [Ranges|_] =
+        lists:filtermap(
+            fun({card_number, {ranges, Ranges}}) -> {true, Ranges}; (_) -> false end,
+            Rules
+        ),
     oneof(get_possible_lengths(Ranges, ordsets:new())).
 
 get_possible_lengths([], Acc) ->

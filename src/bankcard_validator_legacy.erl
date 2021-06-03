@@ -27,64 +27,50 @@
 
 -define(KNOWN_RULES, #{
     <<"AMERICAN EXPRESS">> => [
-        {card_number, [
-            {ranges, [#'IntegerRange'{lower = 15, upper = 15}]},
-            {checksum, {luhn, #'domain_PaymentCardNumberChecksumLuhn'{}}}
-        ]},
+        {card_number, {checksum, {luhn, #'domain_PaymentCardNumberChecksumLuhn'{}}}},
+        {card_number, {ranges, [#'IntegerRange'{lower = 15, upper = 15}]}},
         {cvc, {length, #'IntegerRange'{lower = 3, upper = 4}}},
         {exp_date, {exact_exp_date, #'domain_PaymentCardExactExpirationDate'{}}}
     ],
     %% TODO Remove in favor of <<"AMERICAN EXPRESS">>
     <<"AMERICAN EXPRESS COMPANY">> => [
-        {card_number, [
-            {ranges, [#'IntegerRange'{lower = 15, upper = 15}]},
-            {checksum, {luhn, #'domain_PaymentCardNumberChecksumLuhn'{}}}
-        ]},
+        {card_number, {checksum, {luhn, #'domain_PaymentCardNumberChecksumLuhn'{}}}},
+        {card_number, {ranges, [#'IntegerRange'{lower = 15, upper = 15}]}},
         {cvc, {length, #'IntegerRange'{lower = 3, upper = 4}}},
         {exp_date, {exact_exp_date, #'domain_PaymentCardExactExpirationDate'{}}}
     ],
 
     <<"CHINA UNION PAY">> => [
-        {card_number, [
-            {ranges, [#'IntegerRange'{lower = 16, upper = 16}, #'IntegerRange'{lower = 19, upper = 19}]},
-            {checksum, {luhn, #'domain_PaymentCardNumberChecksumLuhn'{}}}
-        ]},
+        {card_number, {checksum, {luhn, #'domain_PaymentCardNumberChecksumLuhn'{}}}},
+        {card_number, {ranges, [#'IntegerRange'{lower = 16, upper = 16}, #'IntegerRange'{lower = 19, upper = 19}]}},
         {cvc, {length, #'IntegerRange'{lower = 3, upper = 3}}},
         {exp_date, {exact_exp_date, #'domain_PaymentCardExactExpirationDate'{}}}
     ],
 
     <<"DANKORT">> => [
-        {card_number, [
-            {ranges, [#'IntegerRange'{lower = 16, upper = 16}]},
-            {checksum, {luhn, #'domain_PaymentCardNumberChecksumLuhn'{}}}
-        ]},
+        {card_number, {checksum, {luhn, #'domain_PaymentCardNumberChecksumLuhn'{}}}},
+        {card_number, {ranges, [#'IntegerRange'{lower = 16, upper = 16}]}},
         {cvc, {length, #'IntegerRange'{lower = 3, upper = 3}}},
         {exp_date, {exact_exp_date, #'domain_PaymentCardExactExpirationDate'{}}}
     ],
 
     <<"DINERS CLUB INTERNATIONAL">> => [
-        {card_number, [
-            {ranges, [#'IntegerRange'{lower = 14, upper = 14}, #'IntegerRange'{lower = 19, upper = 19}]},
-            {checksum, {luhn, #'domain_PaymentCardNumberChecksumLuhn'{}}}
-        ]},
+        {card_number, {checksum, {luhn, #'domain_PaymentCardNumberChecksumLuhn'{}}}},
+        {card_number, {ranges, [#'IntegerRange'{lower = 14, upper = 14}, #'IntegerRange'{lower = 19, upper = 19}]}},
         {cvc, {length, #'IntegerRange'{lower = 3, upper = 3}}},
         {exp_date, {exact_exp_date, #'domain_PaymentCardExactExpirationDate'{}}}
     ],
 
     <<"DISCOVER">> => [
-        {card_number, [
-            {ranges, [#'IntegerRange'{lower = 16, upper = 16}]},
-            {checksum, {luhn, #'domain_PaymentCardNumberChecksumLuhn'{}}}
-        ]},
+        {card_number, {checksum, {luhn, #'domain_PaymentCardNumberChecksumLuhn'{}}}},
+        {card_number, {ranges, [#'IntegerRange'{lower = 16, upper = 16}]}},
         {cvc, {length, #'IntegerRange'{lower = 3, upper = 3}}},
         {exp_date, {exact_exp_date, #'domain_PaymentCardExactExpirationDate'{}}}
     ],
 
     <<"JCB">> => [
-        {card_number, [
-            {ranges, [#'IntegerRange'{lower = 16, upper = 16}]},
-            {checksum, {luhn, #'domain_PaymentCardNumberChecksumLuhn'{}}}
-        ]},
+        {card_number, {checksum, {luhn, #'domain_PaymentCardNumberChecksumLuhn'{}}}},
+        {card_number, {ranges, [#'IntegerRange'{lower = 16, upper = 16}]}},
         {cvc, {length, #'IntegerRange'{lower = 3, upper = 3}}},
         {exp_date, {exact_exp_date, #'domain_PaymentCardExactExpirationDate'{}}}
     ],
@@ -101,46 +87,36 @@
     %% The IIN appears in the first six (6) digits of the PAN and must be assigned
     %% by the ISO Registration Authority, and must be unique.
     <<"MAESTRO">> => [
-        {card_number, [
-            {ranges, [#'IntegerRange'{lower = 12, upper = 12}, #'IntegerRange'{lower = 19, upper = 19}]},
-            {checksum, {luhn, #'domain_PaymentCardNumberChecksumLuhn'{}}}
-        ]},
+        {card_number, {checksum, {luhn, #'domain_PaymentCardNumberChecksumLuhn'{}}}},
+        {card_number, {ranges, [#'IntegerRange'{lower = 12, upper = 12}, #'IntegerRange'{lower = 19, upper = 19}]}},
         {cvc, {length, #'IntegerRange'{lower = 3, upper = 3}}},
         {exp_date, {exact_exp_date, #'domain_PaymentCardExactExpirationDate'{}}}
     ],
 
     <<"MASTERCARD">> => [
-        {card_number, [
-            {ranges, [#'IntegerRange'{lower = 16, upper = 16}]},
-            {checksum, {luhn, #'domain_PaymentCardNumberChecksumLuhn'{}}}
-        ]},
+        {card_number, {checksum, {luhn, #'domain_PaymentCardNumberChecksumLuhn'{}}}},
+        {card_number, {ranges, [#'IntegerRange'{lower = 16, upper = 16}]}},
         {cvc, {length, #'IntegerRange'{lower = 3, upper = 3}}},
         {exp_date, {exact_exp_date, #'domain_PaymentCardExactExpirationDate'{}}}
     ],
 
     <<"NSPK MIR">> => [
-        {card_number, [
-            {ranges, [#'IntegerRange'{lower = 16, upper = 16}, #'IntegerRange'{lower = 19, upper = 20}]},
-            {checksum, {luhn, #'domain_PaymentCardNumberChecksumLuhn'{}}}
-        ]},
+        {card_number, {checksum, {luhn, #'domain_PaymentCardNumberChecksumLuhn'{}}}},
+        {card_number, {ranges, [#'IntegerRange'{lower = 16, upper = 16}, #'IntegerRange'{lower = 19, upper = 20}]}},
         {cvc, {length, #'IntegerRange'{lower = 3, upper = 3}}},
         {exp_date, {exact_exp_date, #'domain_PaymentCardExactExpirationDate'{}}}
     ],
 
     <<"VISA">> => [
-        {card_number, [
-            {ranges, [#'IntegerRange'{lower = 13, upper = 13}, #'IntegerRange'{lower = 16, upper = 16}]},
-            {checksum, {luhn, #'domain_PaymentCardNumberChecksumLuhn'{}}}
-        ]},
+        {card_number, {checksum, {luhn, #'domain_PaymentCardNumberChecksumLuhn'{}}}},
+        {card_number, {ranges, [#'IntegerRange'{lower = 13, upper = 13}, #'IntegerRange'{lower = 16, upper = 16}]}},
         {cvc, {length, #'IntegerRange'{lower = 3, upper = 3}}},
         {exp_date, {exact_exp_date, #'domain_PaymentCardExactExpirationDate'{}}}
     ],
 
     <<"VISA/DANKORT">> => [
-        {card_number, [
-            {ranges, [#'IntegerRange'{lower = 13, upper = 13}, #'IntegerRange'{lower = 16, upper = 16}]},
-            {checksum, {luhn, #'domain_PaymentCardNumberChecksumLuhn'{}}}
-        ]},
+        {card_number, {checksum, {luhn, #'domain_PaymentCardNumberChecksumLuhn'{}}}},
+        {card_number, {ranges, [#'IntegerRange'{lower = 13, upper = 13}, #'IntegerRange'{lower = 16, upper = 16}]}},
         {cvc, {length, #'IntegerRange'{lower = 3, upper = 3}}},
         {exp_date, {exact_exp_date, #'domain_PaymentCardExactExpirationDate'{}}}
     ],

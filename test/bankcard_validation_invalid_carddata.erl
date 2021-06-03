@@ -1,6 +1,8 @@
--module(prop_bankcard_validation_invalid_carddata).
+-module(bankcard_validation_invalid_carddata).
 -include_lib("proper/include/proper.hrl").
 -include_lib("damsel/include/dmsl_base_thrift.hrl").
+
+-export([invalid_card_number_test/0]).
 
 -define(MIN_CARD_NUMBER_LENGTH, 12).
 -define(MAX_CARD_NUMBER_LENGTH, 20).
@@ -9,8 +11,8 @@
 %%%%%%%%%%%%%%%%%%
 %%% Properties %%%
 %%%%%%%%%%%%%%%%%%
--spec prop_invalid_card_number() -> proper:test().
-prop_invalid_card_number() ->
+-spec invalid_card_number_test() -> proper:test().
+invalid_card_number_test() ->
     ?FORALL(
         {PaymentSystem, Card},
         {known_payment_system(), invalid_card_data()},
