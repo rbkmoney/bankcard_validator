@@ -22,13 +22,13 @@
 -type session_data() :: cds_proto_storage_thrift:'SessionData'().
 -type extra_card_data() :: #{
     cardholder => binary() | undefined,
-    exp_data => {integer(), integer()}
+    exp_date => {integer(), integer()}
 }.
 
 -type bankcard_data() :: #{
     card_number := binary(),
     cardholder => binary() | undefined,
-    exp_data => {integer(), integer()},
+    exp_date => {integer(), integer()},
     cvc => binary()
 }.
 

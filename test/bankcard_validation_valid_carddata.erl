@@ -1,6 +1,7 @@
 -module(bankcard_validation_valid_carddata).
 -include_lib("proper/include/proper.hrl").
 -include_lib("damsel/include/dmsl_base_thrift.hrl").
+-include_lib("common_test/include/ct.hrl").
 
 -export([valid_card_number_test/0]).
 

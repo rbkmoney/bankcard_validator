@@ -24,7 +24,12 @@
 -type payment_system() :: binary().
 -type context() :: woody_context:ctx().
 -type bankcard_data() :: bankcard_validator_carddata:bankcard_data().
--type reason() :: unrecognized | {invalid, card_number | cvc | exp_date}.
+-type reason() ::
+    {invalid, card_number, {checksum, {luhn, {dmsl_domain_thrift:'PaymentCardNumberChecksumLuhn'()}}}}
+    | {invalid, card_number, {ranges, ordsets:ordset(dmsl_base_thrift:'IntegerRange'())}}
+    | {invalid, cvc, {length, dmsl_base_thrift:'IntegerRange'()}}
+    | {invalid, exp_date, {exact_exp_date, dmsl_domain_thrift:'PaymentCardExactExpirationDate'()}}.
+
 -type validation_env() :: #{
     now := calendar:datetime()
 }.

@@ -29,6 +29,10 @@
 -export([test_invalid_carddata/1]).
 -export([test_valid_carddata/1]).
 -export([test_no_rules_found/1]).
+-export([test_invalid_card_number_checksum/1]).
+-export([test_invalid_card_number_range/1]).
+-export([test_invalid_cvc/1]).
+-export([test_invalid_exp_date/1]).
 
 -type config() :: [{atom(), any()}].
 -type case_name() :: atom().
@@ -39,6 +43,10 @@
 -spec test_invalid_carddata(config()) -> ok.
 -spec test_valid_carddata(config()) -> ok.
 -spec test_no_rules_found(config()) -> ok.
+-spec test_invalid_card_number_checksum(config()) -> ok.
+-spec test_invalid_card_number_range(config()) -> ok.
+-spec test_invalid_cvc(config()) -> ok.
+-spec test_invalid_exp_date(config()) -> ok.
 
 -behaviour(supervisor).
 
@@ -53,7 +61,11 @@ all() ->
     [
         test_invalid_carddata,
         test_valid_carddata,
-        test_no_rules_found
+        test_no_rules_found,
+        test_invalid_card_number_checksum,
+        test_invalid_cvc,
+        test_invalid_exp_date,
+        test_invalid_card_number_range
     ].
 
 %%
@@ -97,7 +109,7 @@ test_valid_carddata(_C) ->
 test_no_rules_found(_C) ->
     DefaultEnv = #{now => calendar:universal_time()},
     try
-        bankcard_validator:validate(
+        ok = bankcard_validator:validate(
             #{card_number => <<"12345678909887">>, exp_date => {2, 2020}},
             <<"NONEXISTED">>,
             DefaultEnv,
@@ -107,3 +119,43 @@ test_no_rules_found(_C) ->
     catch
         throw:{invalid, payment_system} -> ok
     end.
+
+test_invalid_card_number_checksum(_C) ->
+    DefaultEnv = #{now => calendar:universal_time()},
+    {error, {invalid, card_number, {checksum, {luhn, _}}}} =
+        bankcard_validator:validate(
+            #{card_number => <<"12345678909887">>, exp_date => {2, 2030}},
+            <<"VISA">>,
+            DefaultEnv,
+            #{deadline => undefined, rpc_id => #{}}
+        ).
+
+test_invalid_card_number_range(_C) ->
+    DefaultEnv = #{now => calendar:universal_time()},
+    {error, {invalid, card_number, {ranges, _}}} =
+        bankcard_validator:validate(
+            #{card_number => <<"424242424242424242">>, exp_date => {2, 2030}, cvc => <<"12345">>},
+            <<"VISA">>,
+            DefaultEnv,
+            #{deadline => undefined, rpc_id => #{}}
+        ).
+
+test_invalid_cvc(_C) ->
+    DefaultEnv = #{now => calendar:universal_time()},
+    {error, {invalid, cvc, {length, _}}} =
+        bankcard_validator:validate(
+            #{card_number => <<"4242424242424242">>, exp_date => {2, 2030}, cvc => <<"12345">>},
+            <<"VISA">>,
+            DefaultEnv,
+            #{deadline => undefined, rpc_id => #{}}
+        ).
+
+test_invalid_exp_date(_C) ->
+    DefaultEnv = #{now => calendar:universal_time()},
+    {error, {invalid, exp_date, {exact_exp_date, _}}} =
+        bankcard_validator:validate(
+            #{card_number => <<"4242424242424242">>, exp_date => {2, 2020}},
+            <<"VISA">>,
+            DefaultEnv,
+            #{deadline => undefined, rpc_id => #{}}
+        ).

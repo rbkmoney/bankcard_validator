@@ -32,8 +32,7 @@
 -spec init_suite(module(), config()) -> config().
 init_suite(Module, Config) ->
     SupPid = start_mocked_service_sup(Module),
-    Apps1 =
-        start_app(woody),
+    Apps1 = start_app(woody, [{acceptors_pool_size, 4}]),
     ServiceURLs = mock_services_(
         [
             {
@@ -70,23 +69,12 @@ start_mocked_service_sup(Module) ->
     _ = unlink(SupPid),
     SupPid.
 
--spec start_app(app_name()) -> [app_name()].
-start_app(woody = AppName) ->
-    start_app(AppName, [
-        {acceptors_pool_size, 4}
-    ]);
-start_app(AppName) ->
-    genlib_app:start_application(AppName).
-
 -spec start_app(app_name(), list()) -> [app_name()].
 start_app(AppName, Env) ->
     genlib_app:start_application_with(AppName, Env).
 
 -spec mock_services_(_, _) -> _.
-% TODO need a better name
-mock_services_(Services, Config) when is_list(Config) ->
-    mock_services_(Services, ?config(test_sup, Config));
-mock_services_(Services, SupPid) when is_pid(SupPid) ->
+mock_services_(Services, SupPid) ->
     Name = lists:map(fun get_service_name/1, Services),
     {ok, IP} = inet:parse_address(?SERVICE_IP),
     ServerID = {dummy, Name},
