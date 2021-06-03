@@ -28,6 +28,7 @@
 
 -export([test_invalid_carddata/1]).
 -export([test_valid_carddata/1]).
+-export([test_no_rules_found/1]).
 
 -type config() :: [{atom(), any()}].
 -type case_name() :: atom().
@@ -37,6 +38,7 @@
 -spec end_per_suite(config()) -> any().
 -spec test_invalid_carddata(config()) -> ok.
 -spec test_valid_carddata(config()) -> ok.
+-spec test_no_rules_found(config()) -> ok.
 
 -behaviour(supervisor).
 
@@ -50,7 +52,8 @@ init([]) ->
 all() ->
     [
         test_invalid_carddata,
-        test_valid_carddata
+        test_valid_carddata,
+        test_no_rules_found
     ].
 
 %%
@@ -77,7 +80,7 @@ test_invalid_carddata(_C) ->
     ),
     case R of
         true -> ok;
-        Error -> exit(Error)
+        Error -> error(Error)
     end.
 
 test_valid_carddata(_C) ->
@@ -88,5 +91,19 @@ test_valid_carddata(_C) ->
     ),
     case R of
         true -> ok;
-        Error -> exit(Error)
+        Error -> error(Error)
+    end.
+
+test_no_rules_found(_C) ->
+    DefaultEnv = #{now => calendar:universal_time()},
+    try
+        bankcard_validator:validate(
+            #{card_number => <<"12345678909887">>, exp_date => {2, 2020}},
+            <<"NONEXISTED">>,
+            DefaultEnv,
+            #{deadline => undefined, rpc_id => #{}}
+        ),
+        error(not_reachable)
+    catch
+        throw:{invalid, payment_system} -> ok
     end.
