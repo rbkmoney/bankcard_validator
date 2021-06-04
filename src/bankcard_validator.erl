@@ -23,7 +23,13 @@
 
 -type payment_system() :: binary().
 -type context() :: woody_context:ctx().
--type bankcard_data() :: bankcard_validator_carddata:bankcard_data().
+-type bankcard_data() :: #{
+    card_number := binary(),
+    cardholder => binary() | undefined,
+    exp_date => {integer(), integer()},
+    cvc => binary()
+}.
+
 -type reason() ::
     {invalid, card_number, {checksum, {luhn, {dmsl_domain_thrift:'PaymentCardNumberChecksumLuhn'()}}}}
     | {invalid, card_number, {ranges, ordsets:ordset(dmsl_base_thrift:'IntegerRange'())}}
@@ -34,6 +40,7 @@
     now := calendar:datetime()
 }.
 
+-export_type([bankcard_data/0]).
 -export_type([payment_system/0]).
 -export_type([validation_env/0]).
 -export_type([reason/0]).
