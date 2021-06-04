@@ -58,7 +58,7 @@ format:
 	$(REBAR) fmt -w
 
 dialyze: submodules
-	$(REBAR) dialyzer
+	$(REBAR) as test dialyzer
 
 clean:
 	$(REBAR) clean
