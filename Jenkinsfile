@@ -38,5 +38,5 @@ build('bankcard_validator', 'docker-host', finalHook) {
   // parallel runs with different profiles brake each other)
   // To prevent this use sequential pipleine here
 
-  pipeErlangLib.runPipe(false, false)
+  pipeErlangLib.runPipe(false, false, 'test')
 }

@@ -68,4 +68,4 @@ distclean:
 
 # CALL_W_CONTAINER
 test: submodules
-	$(REBAR) ct
+	$(REBAR) as test proper,ct

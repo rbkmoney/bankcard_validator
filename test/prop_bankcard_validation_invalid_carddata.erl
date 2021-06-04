@@ -1,9 +1,9 @@
--module(bankcard_validation_invalid_carddata).
+-module(prop_bankcard_validation_invalid_carddata).
 -include_lib("proper/include/proper.hrl").
 -include_lib("damsel/include/dmsl_base_thrift.hrl").
 -include_lib("common_test/include/ct.hrl").
 
--export([invalid_card_number_test/0]).
+-export([prop_test/0]).
 
 -define(MIN_CARD_NUMBER_LENGTH, 12).
 -define(MAX_CARD_NUMBER_LENGTH, 20).
@@ -12,13 +12,21 @@
 %%%%%%%%%%%%%%%%%%
 %%% Properties %%%
 %%%%%%%%%%%%%%%%%%
--spec invalid_card_number_test() -> proper:test().
-invalid_card_number_test() ->
-    ?FORALL(
-        {PaymentSystem, Card},
-        {known_payment_system(), invalid_card_data()},
-        ?WHENFAIL(
-            ct:pal("Proptest failed with payment system '~s', card data '~p'", [PaymentSystem, Card]),
+-spec prop_test() -> proper:outer_test().
+prop_test() ->
+    ?SETUP(
+        fun() ->
+            meck:new([bankcard_validator_domain], [passthrough]),
+            meck:expect(bankcard_validator_domain, get_payment_system_ruleset, fun(ID, _Context) ->
+                {ok, bankcard_validator_legacy:get_payment_system_ruleset(ID)}
+            end),
+            fun() ->
+                meck:unload(bankcard_validator_domain)
+            end
+        end,
+        ?FORALL(
+            {PaymentSystem, Card},
+            {known_payment_system(), invalid_card_data()},
             check_invalid_card_data(PaymentSystem, Card)
         )
     ).

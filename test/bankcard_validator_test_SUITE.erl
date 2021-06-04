@@ -26,8 +26,6 @@
 
 -export([init/1]).
 
--export([test_invalid_carddata/1]).
--export([test_valid_carddata/1]).
 -export([test_no_rules_found/1]).
 -export([test_invalid_card_number_checksum/1]).
 -export([test_invalid_card_number_range/1]).
@@ -42,8 +40,6 @@
 -spec all() -> [case_name()].
 -spec init_per_suite(config()) -> config().
 -spec end_per_suite(config()) -> any().
--spec test_invalid_carddata(config()) -> ok.
--spec test_valid_carddata(config()) -> ok.
 -spec test_no_rules_found(config()) -> ok.
 -spec test_invalid_card_number_checksum(config()) -> ok.
 -spec test_invalid_card_number_range(config()) -> ok.
@@ -63,8 +59,6 @@ init([]) ->
 %%
 all() ->
     [
-        test_invalid_carddata,
-        test_valid_carddata,
         test_no_rules_found,
         test_invalid_card_number_checksum,
         test_invalid_cvc,
@@ -78,8 +72,6 @@ all() ->
 %% starting/stopping
 %%
 init_per_suite(C) ->
-    % dbg:tracer(), dbg:p(all, c),
-    % dbg:tpl({bankcard_validator, do, 4}, x),
     bankcard_validator_ct_helper:init_suite(?MODULE, C).
 
 end_per_suite(C) ->
@@ -90,28 +82,6 @@ end_per_suite(C) ->
 %%
 %% tests
 %%
-test_invalid_carddata(_C) ->
-    R = proper:quickcheck(
-        bankcard_validation_invalid_carddata:invalid_card_number_test(),
-        % default options
-        [noshrink]
-    ),
-    case R of
-        true -> ok;
-        Error -> error(Error)
-    end.
-
-test_valid_carddata(_C) ->
-    R = proper:quickcheck(
-        bankcard_validation_valid_carddata:valid_card_number_test(),
-        % default options
-        [noshrink]
-    ),
-    case R of
-        true -> ok;
-        Error -> error(Error)
-    end.
-
 test_no_rules_found(_C) ->
     DefaultEnv = #{now => calendar:universal_time()},
     try
