@@ -31,10 +31,10 @@
 }.
 
 -type reason() ::
-    {invalid, card_number, {checksum, {luhn, {dmsl_domain_thrift:'PaymentCardNumberChecksumLuhn'()}}}}
-    | {invalid, card_number, {ranges, ordsets:ordset(dmsl_base_thrift:'IntegerRange'())}}
-    | {invalid, cvc, {length, dmsl_base_thrift:'IntegerRange'()}}
-    | {invalid, exp_date, {exact_exp_date, dmsl_domain_thrift:'PaymentCardExactExpirationDate'()}}.
+    {invalid, card_number, luhn}
+    | {invalid, card_number, {ranges, [{range, pos_integer(), pos_integer()}]}}
+    | {invalid, cvc, {length, pos_integer(), pos_integer()}}
+    | {invalid, exp_date, expiration}.
 
 -type validation_env() :: #{
     now := calendar:datetime()
@@ -64,10 +64,13 @@ run_assertions(CardData, Assertions, Env) ->
         fun
             ({K, Checks}) when is_list(Checks) ->
                 V = maps:get(K, CardData, undefined),
-                lists:foreach(fun(C) -> check_value(V, C, Env) orelse erlang:throw({invalid, K, C}) end, Checks);
+                lists:foreach(
+                    fun(C) -> check_value(V, C, Env) orelse erlang:throw({invalid, K, convert(C)}) end,
+                    Checks
+                );
             ({K, Check}) ->
                 V = maps:get(K, CardData, undefined),
-                check_value(V, Check, Env) orelse erlang:throw({invalid, K, Check})
+                check_value(V, Check, Env) orelse erlang:throw({invalid, K, convert(Check)})
         end,
         Assertions
     ).
@@ -117,3 +120,8 @@ get_ruleset(PaymentSystem, Context) ->
         {ok, Ruleset} ->
             Ruleset
     end.
+
+convert({checksum, {luhn, _}}) -> luhn;
+convert({ranges, Ranges}) -> {ranges, [{range, L, U} || #'IntegerRange'{upper = U, lower = L} <- Ranges]};
+convert({length, #'IntegerRange'{upper = U, lower = L}}) -> {length, L, U};
+convert({exact_exp_date, _}) -> expiration.

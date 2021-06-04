@@ -98,7 +98,7 @@ test_no_rules_found(_C) ->
 
 test_invalid_card_number_checksum(_C) ->
     DefaultEnv = #{now => calendar:universal_time()},
-    {error, {invalid, card_number, {checksum, {luhn, _}}}} =
+    {error, {invalid, card_number, luhn}} =
         bankcard_validator:validate(
             #{card_number => <<"12345678909887">>, exp_date => {2, 2030}},
             <<"VISA">>,
@@ -120,7 +120,7 @@ test_invalid_card_number_range(_C) ->
 
 test_invalid_cvc(_C) ->
     DefaultEnv = #{now => calendar:universal_time()},
-    {error, {invalid, cvc, {length, _}}} =
+    {error, {invalid, cvc, {length, _, _}}} =
         bankcard_validator:validate(
             #{card_number => <<"4242424242424242">>, exp_date => {2, 2030}, cvc => <<"12345">>},
             <<"VISA">>,
@@ -131,7 +131,7 @@ test_invalid_cvc(_C) ->
 
 test_invalid_exp_date(_C) ->
     DefaultEnv = #{now => calendar:universal_time()},
-    {error, {invalid, exp_date, {exact_exp_date, _}}} =
+    {error, {invalid, exp_date, expiration}} =
         bankcard_validator:validate(
             #{card_number => <<"4242424242424242">>, exp_date => {2, 2020}},
             <<"VISA">>,
