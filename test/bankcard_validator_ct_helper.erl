@@ -25,6 +25,16 @@
 
 -define(SERVICE_IP, "::").
 -define(SERVICE_HOST_NAME, "localhost").
+-define(PAYMENT_SYSTEM_REF(ID), {payment_system, #domain_PaymentSystemRef{id = ID}}).
+-define(PAYMENT_SYSTEM_OBJ(ID, Rules),
+    {payment_system, #domain_PaymentSystemObject{
+        ref = #domain_PaymentSystemRef{id = ID},
+        data = #domain_PaymentSystem{
+            name = ID,
+            validation_rules = Rules
+        }
+    }}
+).
 
 -type config() :: [{atom(), any()}].
 -type app_name() :: atom().
@@ -42,23 +52,13 @@ init_suite(Module, Config) ->
                     {ok, #'Snapshot'{
                         version = 1,
                         domain = #{
-                            {payment_system, #domain_PaymentSystemRef{id = <<"VISA">>}} =>
-                                {payment_system, #domain_PaymentSystemObject{
-                                    ref = #domain_PaymentSystemRef{id = <<"VISA">>},
-                                    data = #domain_PaymentSystem{
-                                        name = <<"VISA">>,
-                                        validation_rules = bankcard_validator_legacy:get_payment_system_ruleset(
-                                            <<"VISA">>
-                                        )
-                                    }
-                                }},
-                            {payment_system, #domain_PaymentSystemRef{id = <<"DUMMY">>}} =>
-                                {payment_system, #domain_PaymentSystemObject{
-                                    ref = #domain_PaymentSystemRef{id = <<"DUMMY">>},
-                                    data = #domain_PaymentSystem{
-                                        name = <<"DUMMY">>
-                                    }
-                                }}
+                            ?PAYMENT_SYSTEM_REF(<<"VISA">>) =>
+                                ?PAYMENT_SYSTEM_OBJ(
+                                    <<"VISA">>,
+                                    bankcard_validator_legacy:get_payment_system_ruleset(<<"VISA">>)
+                                ),
+                            ?PAYMENT_SYSTEM_REF(<<"DUMMY">>) =>
+                                ?PAYMENT_SYSTEM_OBJ(<<"DUMMY">>, undefined)
                         }
                     }}
                 end
