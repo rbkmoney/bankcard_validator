@@ -44,7 +44,7 @@ validate(CardData, PaymentSystem, Env, Context) ->
     try
         run_assertions(CardData, Ruleset, Env)
     catch
-        Reason ->
+        _:Reason ->
             {error, Reason}
     end.
 
