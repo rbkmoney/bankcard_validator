@@ -48,33 +48,26 @@ known_payment_system() ->
 %% Generates invalid card data
 invalid_card_data() ->
     ?LET(
-        Cardholder,
-        cardholder(),
-        ?LET(
-            CVC,
+        {Cardholder, CVC, InvalidExpDate, CardNumberLength},
+        {
+            cardholder(),
             vector(?MIN_INVALID_CVC_LENGTH, choose($0, $9)),
+            invalid_exp_date(),
+            choose(?MIN_CARD_NUMBER_LENGTH, ?MAX_CARD_NUMBER_LENGTH)
+        },
+        ?SUCHTHAT(
+            #{card_number := CardNumber},
             ?LET(
-                InvalidExpDate,
-                invalid_exp_date(),
-                ?LET(
-                    CardNumberLength,
-                    choose(?MIN_CARD_NUMBER_LENGTH, ?MAX_CARD_NUMBER_LENGTH),
-                    ?SUCHTHAT(
-                        #{card_number := CardNumber},
-                        ?LET(
-                            CardNumber,
-                            vector(CardNumberLength, choose($0, $9)),
-                            #{
-                                card_number => list_to_binary(CardNumber),
-                                exp_date => InvalidExpDate,
-                                cvc => list_to_binary(CVC),
-                                cardholder => list_to_binary(Cardholder)
-                            }
-                        ),
-                        not is_luhn(CardNumber, 0)
-                    )
-                )
-            )
+                CardNumber,
+                vector(CardNumberLength, choose($0, $9)),
+                #{
+                    card_number => list_to_binary(CardNumber),
+                    exp_date => InvalidExpDate,
+                    cvc => list_to_binary(CVC),
+                    cardholder => list_to_binary(Cardholder)
+                }
+            ),
+            not is_luhn(CardNumber, 0)
         )
     ).
 

@@ -55,29 +55,17 @@ payment_system_and_card_data() ->
 %% Generates valid card data according payment system rules
 valid_card_data(PaymentSystem) ->
     ?LET(
-        Cardholder,
-        cardholder(),
+        {Cardholder, CVC, InvalidExpDate, CardNumberLength},
+        {cardholder(), get_cvc(PaymentSystem), valid_exp_date(), get_card_number_length(PaymentSystem)},
         ?LET(
-            CVC,
-            get_cvc(PaymentSystem),
-            ?LET(
-                InvalidExpDate,
-                valid_exp_date(),
-                ?LET(
-                    CardNumberLength,
-                    get_card_number_length(PaymentSystem),
-                    ?LET(
-                        CardNumber,
-                        vector(CardNumberLength, choose($0, $9)),
-                        #{
-                            card_number => add_luhn_checksum(list_to_binary(CardNumber)),
-                            exp_date => InvalidExpDate,
-                            cvc => list_to_binary(CVC),
-                            cardholder => list_to_binary(Cardholder)
-                        }
-                    )
-                )
-            )
+            CardNumber,
+            vector(CardNumberLength, choose($0, $9)),
+            #{
+                card_number => add_luhn_checksum(list_to_binary(CardNumber)),
+                exp_date => InvalidExpDate,
+                cvc => list_to_binary(CVC),
+                cardholder => list_to_binary(Cardholder)
+            }
         )
     ).
 
