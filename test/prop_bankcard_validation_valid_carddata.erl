@@ -8,7 +8,9 @@
 %%%%%%%%%%%%%%%%%%
 %%% Properties %%%
 %%%%%%%%%%%%%%%%%%
--spec prop_test() -> proper:outer_test().
+-spec prop_test() -> any().
+%% Suppress proper's internal type mismatch for setup generator
+-dialyzer([no_return, no_opaque]).
 prop_test() ->
     ?SETUP(
         fun() ->
