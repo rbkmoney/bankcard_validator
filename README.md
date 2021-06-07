@@ -1,9 +1,16 @@
 bankcard_validator
 =====
 
-An OTP library
+Simple bank card validation library based on precofigured rules from dominant.
+When no rules found for given payment system it tries to use old hardcoded one (if any).
 
 Build
 -----
 
-    $ rebar3 compile
+    $ make
+
+Test
+-----
+
+    $ make test
+
