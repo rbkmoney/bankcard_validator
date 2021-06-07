@@ -1,5 +1,5 @@
 {application, bankcard_validator,
- [{description, "Bankcard validation library"},
+ [{description, "Bank card validation library"},
   {vsn, git},
   {registered, []},
   {applications,
