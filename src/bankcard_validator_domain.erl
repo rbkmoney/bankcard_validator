@@ -32,9 +32,7 @@
 -spec get_payment_system_ruleset(payment_system_id(), context()) -> {ok, validation_rules()} | {error, not_found}.
 get_payment_system_ruleset(PaymentSystemID, Context) ->
     Ref = {payment_system, #domain_PaymentSystemRef{id = PaymentSystemID}},
-    try
-        dmt_client:checkout_object(latest, Ref, #{woody_context => Context})
-    of
+    try dmt_client:checkout_object(latest, Ref, #{woody_context => Context}) of
         {payment_system, #domain_PaymentSystemObject{data = #domain_PaymentSystem{validation_rules = Ruleset}}} ->
             {ok, Ruleset}
     catch
